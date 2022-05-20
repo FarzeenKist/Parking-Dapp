@@ -11,7 +11,7 @@ This is a marketplace where user can:
 * Add your own parking Lots to the dapp
 
 ## Live Demo
-[Marketplace Dapp](https://dacadeorg.github.io/celo-marketplace-dapp/)
+[Marketplace Dapp](https://farzeenkist.github.io/Parking-Dapp/)
 
 ## Usage
 
