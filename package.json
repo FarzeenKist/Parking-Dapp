@@ -1,5 +1,6 @@
 {
   "main": "index.js",
+  "name": "parking-dapp",
   "dependencies": {
     "@celo/contractkit": "^1.0.2",
     "bignumber.js": "^9.0.1"

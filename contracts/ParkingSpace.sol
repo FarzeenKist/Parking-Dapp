@@ -32,7 +32,7 @@ contract ParkingSpace {
     // keeps track of the addresses that has been blacklisted
     address[] private blacklist;
 
-    uint fee; 
+    uint fee;
     uint maxLotPerWallet;
 
 
@@ -66,8 +66,8 @@ contract ParkingSpace {
         additionalTime = 172800;
         owner = payable(msg.sender);
         maxLotPerWallet = 10;
-        fee = 1000000000000000000;
-        
+        fee = 1 ether;
+
 
     }
 
@@ -76,7 +76,7 @@ contract ParkingSpace {
         require(parkingLots[_id].availability, "Parking lot is current unavailable!");
         _;
     }
-    
+
 
     // this checks if the renting period of a lot is over
     // this modifier also gives a deadline of 2 days to the renter to close his account with the current lot
@@ -94,9 +94,12 @@ contract ParkingSpace {
 
     // creates a parking lot
     function createLot(string memory _image, string memory _location, string memory _description, uint _price, uint _deposit) payable public lotLimit {
-  
+
         //_deposit should be in percentage. Makes sure that _deposit is less or equal to 100%
         require(_deposit <= 100, "Deposit rate has to be equal or lower than 100%");
+        require(_price > 0, "Price has to be greater than 0");
+        require(_deposit > 0, "Deposit has to be greater than 0");
+        require(bytes(_image).length > 4, "Enter a valid image");
 
         // fee is paid
         require(
@@ -112,7 +115,7 @@ contract ParkingSpace {
         uint rentTime = 0;
         //@notice Lot.renter is initialized in the same way as the lender
         parkingLots[totalParkings] = Lot(
-            payable(msg.sender), 
+            payable(msg.sender),
             payable(msg.sender),
             _image,
             _price,
@@ -139,8 +142,8 @@ contract ParkingSpace {
         // _time is in seconds so it is converted into days
         uint rentingTime = _time / 3600 / 24;
         // deposit is calculated bv the percentage set by lender multiplied by the total fee
-        uint amount = parkingLots[_id].deposit / 100 * ( parkingLots[_id].price * rentingTime);
-        
+        uint amount = (parkingLots[_id].deposit / 100) * ( parkingLots[_id].price * rentingTime);
+
         // paying deposit
         require(
           IERC20Token(cUsdTokenAddress).transferFrom(
@@ -150,7 +153,7 @@ contract ParkingSpace {
           ),
           "Transfer failed."
         );
-   
+
         currentLot.renter = payable(msg.sender);
         currentLot.rentTime = _time;
         currentLot.returnDay = block.timestamp + _time;
@@ -185,11 +188,11 @@ contract ParkingSpace {
 
     }
 
-    // thiis function is used by the lender in the situation that the renter hasn't return the lot after the deadline and additional time
+    // this function is used by the lender in the situation that the renter hasn't return the lot after the deadline and additional time
     function endRentOnlyOwner(uint _id) public payable {
         Lot storage currentLot = parkingLots[_id];
         require(currentLot.lender == msg.sender, "Only lender can end the rent");
-        require(block.timestamp > currentLot.returnDay + additionalTime, "There is still timeleft for renter to return the lot!");
+        require(block.timestamp > currentLot.returnDay + additionalTime, "There is still time left for renter to return the lot!");
         blacklistCount++;
         // renter is now blacklisted
         blacklist.push(currentLot.renter);
