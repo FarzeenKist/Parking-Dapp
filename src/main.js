@@ -17,10 +17,10 @@ let products = [];
 async function approve(_price) {
   const cUSDContract = new kit.web3.eth.Contract(erc20Abi, cUSDContractAddress);
 
-  const result = await cUSDContract.methods
+  return await cUSDContract.methods
     .approve(PSContractAddress, _price)
     .send({ from: kit.defaultAccount });
-  return result;
+
 }
 
 // retrieves the balance of the current wallet
@@ -32,8 +32,8 @@ const getBalance = async function () {
 
 // retrieves the total number of people that have been blacklisted from the platform
 const getBlackiListCount = async function () {
-  const blackListCount = await contract.methods.getBlacklistCount().call();
-  document.querySelector("#banned").textContent = blackListCount;
+  document.querySelector("#banned").textContent = await contract.methods.getBlacklistCount().call();
+
 };
 
 // checks if the celo wallet extension is installed, if it is, user is prompted to log in
